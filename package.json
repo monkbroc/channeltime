@@ -1,0 +1,21 @@
+{
+  "name": "slack-time-express",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "chrono-node": "^1.0.11",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "got": "^5.2.1",
+    "jade": "~1.11.0",
+    "moment": "^2.10.6",
+    "mongoose": "^4.3.1",
+    "morgan": "~1.6.1",
+    "serve-favicon": "~2.3.0"
+  }
+}
