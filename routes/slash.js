@@ -1,51 +1,55 @@
 var express = require('express');
-var find = require('../adapters/account').find;
+var account = require('../adapters/account');
 
-function parseSlackMessage(msg, callback) {
-  var payload = {
-    ok: true,
-    raw: msg,
-    apiToken: '',
-    expectedSlashCommandToken: '',
-    slashCommandToken: msg.token,
-    message: msg.text,
-    currentUserId: msg.user_id,
-    channelName: msg.channel_name,
-    channelId: msg.channel_id,
-    defaultChannel: ''
+module.exports = function (config) {
+  var handler = config.handler;
+  var slash = express();
+
+  function parseSlackMessage(msg) {
+    return new Promise(function (fulfill, reject) {
+      var payload = {
+        ok: true,
+        raw: msg,
+        apiToken: '',
+        expectedSlashCommandToken: config.token,
+        slashCommandToken: msg.token,
+        message: msg.text,
+        currentUserId: msg.user_id,
+        channelName: msg.channel_name,
+        channelId: msg.channel_id,
+        defaultChannel: ''
+      }
+
+      // lookup the account in the db
+      account.find(msg.team_id)
+      .then(function (account) {
+        if (!account) {
+          payload.ok = true
+          payload.text = 'no account for this slack team'
+        }
+        else {
+          payload.ok = true
+          payload.text = 'account found'
+          payload.account = account
+          payload.apiToken = account.apiToken
+          payload.defaultChannel = account.defaultChannel
+        }
+        fulfill(payload);
+      })
+      .catch(function (err) {
+        payload.ok = false
+        payload.text = 'find method returned an error'
+        reject(err, payload);
+      });
+    });
   }
 
-  // lookup the account in the db
-  find(msg, function (err, account) {
-    if (err) {
-      payload.ok = false
-      payload.text = 'find method returned an error'
-    }
-    else if (!account) {
-      payload.ok = true
-      payload.text = 'no account for this slack team'
-    }
-    else {
-      payload.ok = true
-      payload.text = 'account found'
-      payload.account = account
-      payload.apiToken = account.apiToken
-      payload.expectedSlashCommandToken = account.slashToken
-      payload.defaultChannel = account.defaultChannel
-    }
-    // end of find
-    callback(err, payload)
-  })
-}
-
-module.exports = function (options) {
-  var handler = options.handler;
-  var router = express.Router();
-
-  /* GET home page. */
-  router.post('/', function(req, res, next) {
+  /* Inbound slash command */
+  slash.post('/', function(req, res, next) {
     console.log(new Date().toISOString() + " request start");
-    parseSlackMessage(req.body, function (err, payload) {
+    console.log(req.body);
+    parseSlackMessage(req.body)
+    .then(function (payload) {
       if(handler) {
         handler(payload)
         .then(function (message) {
@@ -58,8 +62,16 @@ module.exports = function (options) {
       } else {
         res.send("OK");
       }
+    })
+    .catch(function (error) {
+      console.log(error);
+      next();
     });
   });
 
-  return router;
+  slash.on('mount', function (parent) {
+    console.log('** Waiting for commands on URL: http://MY_HOST:PORT' + slash.mountpath + '/');
+  });
+
+  return slash;
 };

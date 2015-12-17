@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -6,8 +8,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var slash = require('./routes/slash');
+var auth = require('./routes/auth');
 
 var slackTime = require('./lib/slack_time');
+
+if (!process.env.SLACK_CLIENT_ID || !process.env.SLACK_CLIENT_SECRET || !process.env.SLACK_SLASH_TOKEN) {
+  console.log('Error: Specify SLACK_CLIENT_ID SLACK_CLIENT_SECRET and SLACK_SLASH_TOKEN in environment');
+  process.exit(1);
+}
 
 var app = express();
 
@@ -23,7 +31,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', slash({ handler: slackTime }));
+app.use('/slack/receive', slash({
+  handler: slackTime,
+  token: process.env.SLACK_SLASH_TOKEN
+}));
+app.use('/slack', auth({
+  clientId: process.env.SLACK_CLIENT_ID,
+  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  scopes: "users:read,chat:write:user,channels:read,commands"
+}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
