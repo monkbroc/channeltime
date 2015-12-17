@@ -24,14 +24,22 @@ module.exports = function (config) {
     .then(function (auth) {
       console.log(auth);
 
-      return auth_test({ token: auth.access_token })
-      .then(function (identity) {
+      var identityPromise = auth_test({ token: auth.access_token });
+
+      var generalChannelPromise = channels_list({ token: auth.access_token }).
+        then(findGeneralChannelId);
+
+      return Promise.all([identityPromise, generalChannelPromise])
+      .then(function (values) {
+        var identity = values[0];
+        var generalChannelId = values[1];
         console.log(identity);
 
         return Account.findOrCreate(identity.team_id, {
           teamId: identity.team_id,
           createdBy: identity.user_id,
           name: identity.team,
+          defaultChannel: generalChannelId,
           apiToken: auth.access_token,
         })
         .then(function (account) {
@@ -69,6 +77,15 @@ module.exports = function (config) {
     });
   }
 
+  function findGeneralChannelId(response) {
+    for(var channel of response.channels) {
+      if(channel.is_general) {
+         return channel.id;
+      }
+    }
+    return null;
+  }
+
   // get a team url to redirect the user through oauth process
   function getAuthorizeURL() {
     var query = querystring.stringify({
@@ -92,6 +109,10 @@ module.exports = function (config) {
 
   function auth_test(options) {
     return call_api('auth.test', options);
+  }
+
+  function channels_list(options) {
+    return call_api('channels.list', options);
   }
 
   return auth;

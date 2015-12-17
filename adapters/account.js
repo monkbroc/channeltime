@@ -8,9 +8,11 @@ mongoose.connect(url);
 
 var AccountSchema = mongoose.Schema({
     teamId: String,
-    slashToken: String,
+    createdBy: String,
+    name: String,
+    defaultChannel: String,
     apiToken: String,
-    defaultChannel: String
+    actionsPerformed: Number
 });
 AccountSchema.plugin(timestamps);
 AccountSchema.methods.actionPerformed = actionPerformed;

@@ -14,9 +14,7 @@ function mapSlackMessage(msg) {
     message: msg.text,
     teamId: msg.team_id,
     currentUserId: msg.user_id,
-    channelName: msg.channel_name,
-    channelId: msg.channel_id,
-    defaultChannel: null
+    channelId: msg.channel_id
   };
 }
 
