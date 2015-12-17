@@ -1,60 +1,70 @@
 var express = require('express');
-var account = require('../adapters/account');
+var Account = require('../adapters/account');
+var scmp = require('scmp');
+
+function verifyAuthentic(msg, token) {
+  // Safe constant-time comparison of token
+  return scmp(msg.token, token);
+}
+
+function mapSlackMessage(msg) {
+  return {
+    raw: msg,
+    apiToken: null,
+    message: msg.text,
+    teamId: msg.team_id,
+    currentUserId: msg.user_id,
+    channelName: msg.channel_name,
+    channelId: msg.channel_id,
+    defaultChannel: null
+  };
+}
+
+function addTeamToPayload(payload) {
+  return Account.find(payload.teamId)
+  .then(function (account) {
+    if (account) {
+      payload.account = account
+      payload.apiToken = account.apiToken
+      payload.defaultChannel = account.defaultChannel
+    }
+    return payload;
+  });
+}
+
+function teamNotFoundError(host) {
+  return "Time to Slack was not added to your team. Add it at https://" + host;
+}
 
 module.exports = function (config) {
   var handler = config.handler;
   var slash = express();
 
-  function parseSlackMessage(msg) {
-    return new Promise(function (fulfill, reject) {
-      var payload = {
-        ok: true,
-        raw: msg,
-        apiToken: '',
-        expectedSlashCommandToken: config.token,
-        slashCommandToken: msg.token,
-        message: msg.text,
-        currentUserId: msg.user_id,
-        channelName: msg.channel_name,
-        channelId: msg.channel_id,
-        defaultChannel: ''
-      }
-
-      // lookup the account in the db
-      account.find(msg.team_id)
-      .then(function (account) {
-        if (!account) {
-          payload.ok = true
-          payload.text = 'no account for this slack team'
-        }
-        else {
-          payload.ok = true
-          payload.text = 'account found'
-          payload.account = account
-          payload.apiToken = account.apiToken
-          payload.defaultChannel = account.defaultChannel
-        }
-        fulfill(payload);
-      })
-      .catch(function (err) {
-        payload.ok = false
-        payload.text = 'find method returned an error'
-        reject(err, payload);
-      });
-    });
-  }
-
   /* Inbound slash command */
   slash.post('/', function(req, res, next) {
     console.log(new Date().toISOString() + " request start");
     console.log(req.body);
-    parseSlackMessage(req.body)
+
+    if(!verifyAuthentic(req.body, config.token)) {
+      res.status(403).send("Not called by Slack");
+      return;
+    }
+
+    var payload = mapSlackMessage(req.body);
+
+    addTeamToPayload(payload)
     .then(function (payload) {
+      if(!payload.account) {
+        return res.send(teamNotFoundError(req.hostname));
+      }
+
       if(handler) {
         handler(payload)
-        .then(function (message) {
+        .then(function (reply) {
           console.log(new Date().toISOString() + " request end");
-          res.send(message);
+          res.send(reply);
+
+          payload.account.actionPerformed();
         })
         .catch(function (err) {
           res.send(err);

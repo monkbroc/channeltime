@@ -1,31 +1,40 @@
 var mongoose = require('mongoose');
+var timestamps = require('mongoose-timestamp');
+
 mongoose.Promise = global.Promise;
 
 var url = process.env.MONGODB_URL || 'mongodb://localhost/slack_time';
 mongoose.connect(url);
 
-var accountSchema = mongoose.Schema({
+var AccountSchema = mongoose.Schema({
     teamId: String,
     slashToken: String,
     apiToken: String,
     defaultChannel: String
 });
+AccountSchema.plugin(timestamps);
+AccountSchema.methods.actionPerformed = actionPerformed;
 
-var Account = mongoose.model("Account", accountSchema);
+var Account = mongoose.model("Account", AccountSchema);
 
 function find(teamId) {
-  var query = Account.where({ teamId: teamId });
-  return query.findOne();
+  return Account.findOne({ teamId: teamId });
 }
 
 function findOrCreate(teamId, data) {
-  return find(teamId)
-  .then(function (account) {
-    if(!account) {
-      account = new Account(data);
-    }
-    return account;
+  return Account.findOneAndUpdate({
+    teamId: teamId
+  },
+  data,
+  {
+    new: true,
+    upsert: true
   });
+}
+
+function actionPerformed() {
+  var update = { $inc: { actionsPerformed: 1 } };
+  return this.update(update);
 }
 
 module.exports = {

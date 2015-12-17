@@ -1,6 +1,7 @@
 var express = require('express');
 var got = require('got');
-var account = require('../adapters/account');
+var Account = require('../adapters/account');
+var querystring = require('querystring');
 
 module.exports = function (config) {
   var auth = express();
@@ -27,20 +28,20 @@ module.exports = function (config) {
       .then(function (identity) {
         console.log(identity);
 
-        return account.findOrCreate(identity.team_id, {
+        return Account.findOrCreate(identity.team_id, {
           teamId: identity.team_id,
           createdBy: identity.user_id,
           name: identity.team,
           apiToken: auth.access_token,
+        })
+        .then(function (account) {
+          res.redirect(getSuccessUrl());
         });
-      })
-      .then(function (account) {
-        account.save();
-        res.send("OK");
       });
     })
     .catch(function (err) {
-      res.status(500).send(err);
+      console.log(err);
+      res.redirect(getFailureUrl());
     });
   });
 
@@ -48,7 +49,6 @@ module.exports = function (config) {
     console.log('** Serving login URL: http://MY_HOST:PORT' + auth.mountpath + '/login');
     console.log('** Waiting for OAuth callback on URL: http://MY_HOST:PORT' + auth.mountpath + '/oauth');
   });
-
 
   function call_api(command, options) {
     console.log('** API CALL: ' + 'https://slack.com/api/'+command);
@@ -68,13 +68,24 @@ module.exports = function (config) {
       }
     });
   }
-    
+
   // get a team url to redirect the user through oauth process
   function getAuthorizeURL() {
-    var url = 'https://slack.com/oauth/authorize';
-    return url + "?client_id=" + config.clientId + "&scope=" + config.scopes;
+    var query = querystring.stringify({
+      client_id: config.clientId,
+      scope: config.scopes
+    });
+    return 'https://slack.com/oauth/authorize?' + query;
   }
-  
+
+  function getSuccessUrl() {
+    return "/added";
+  }
+
+  function getFailureUrl() {
+    return "/failed";
+  }
+
   function oauth_access(options) {
     return call_api('oauth.access', options);
   }
