@@ -2,6 +2,7 @@ var express = require('express');
 var got = require('got');
 var Account = require('../adapters/account');
 var querystring = require('querystring');
+var logger = require('../lib/logger');
 
 module.exports = function (config) {
   var auth = express();
@@ -13,7 +14,6 @@ module.exports = function (config) {
 
   /* Save new team */
   auth.get('/oauth', function (req, res, next) {
-    console.log(res.query);
     var code = req.query.code;
 
     oauth_access({
@@ -22,8 +22,6 @@ module.exports = function (config) {
       code: code
     })
     .then(function (auth) {
-      console.log(auth);
-
       var identityPromise = auth_test({ token: auth.access_token });
 
       var generalChannelPromise = channels_list({ token: auth.access_token }).
@@ -33,7 +31,7 @@ module.exports = function (config) {
       .then(function (values) {
         var identity = values[0];
         var generalChannelId = values[1];
-        console.log(identity);
+        logger.info("Added team " + identity.team_id);
 
         return Account.findOrCreate(identity.team_id, {
           teamId: identity.team_id,
@@ -48,18 +46,18 @@ module.exports = function (config) {
       });
     })
     .catch(function (err) {
-      console.log(err);
+      logger.error("Failed to authorize team " + err + "\n" + err.stack);
       res.redirect(getFailureUrl());
     });
   });
 
   auth.on('mount', function (parent) {
-    console.log('** Serving login URL: http://MY_HOST:PORT' + auth.mountpath + '/login');
-    console.log('** Waiting for OAuth callback on URL: http://MY_HOST:PORT' + auth.mountpath + '/oauth');
+    logger.debug('** Serving login URL: http://MY_HOST:PORT' + auth.mountpath + '/login');
+    logger.debug('** Waiting for OAuth callback on URL: http://MY_HOST:PORT' + auth.mountpath + '/oauth');
   });
 
   function call_api(command, options) {
-    console.log('** API CALL: ' + 'https://slack.com/api/'+command);
+    logger.debug('** API CALL: ' + 'https://slack.com/api/'+command);
     return got.post('https://slack.com/api/' + command, {
       body: options
     })

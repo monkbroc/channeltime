@@ -1,6 +1,7 @@
 var express = require('express');
 var Account = require('../adapters/account');
 var scmp = require('scmp');
+var logger = require('../lib/logger');
 
 function verifyAuthentic(msg, token) {
   // Safe constant-time comparison of token
@@ -40,10 +41,8 @@ module.exports = function (config) {
 
   /* Inbound slash command */
   slash.post('/', function(req, res, next) {
-    console.log(new Date().toISOString() + " request start");
-    console.log(req.body);
-
     if(!verifyAuthentic(req.body, config.token)) {
+      logger.error("Called with wrong verification token");
       res.status(403).send("Not called by Slack");
       return;
     }
@@ -53,32 +52,28 @@ module.exports = function (config) {
     addTeamToPayload(payload)
     .then(function (payload) {
       if(!payload.account) {
+        logger.error("Called for non-existent team");
         return res.send(teamNotFoundError(req.hostname));
       }
 
       if(handler) {
-        handler(payload)
+        return handler(payload)
         .then(function (reply) {
-          console.log(new Date().toISOString() + " request end");
           res.send(reply);
 
           payload.account.actionPerformed();
-        })
-        .catch(function (err) {
-          res.send(err);
         });
       } else {
         res.send("OK");
       }
     })
-    .catch(function (error) {
-      console.log(error);
-      next();
+    .catch(function (err) {
+      next(err);
     });
   });
 
   slash.on('mount', function (parent) {
-    console.log('** Waiting for commands on URL: http://MY_HOST:PORT' + slash.mountpath + '/');
+    logger.debug('** Waiting for commands on URL: http://MY_HOST:PORT' + slash.mountpath + '/');
   });
 
   return slash;
