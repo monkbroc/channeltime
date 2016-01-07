@@ -1,4 +1,4 @@
-# Time to Slack
+# Channel Time
 
 Automatic time zone conversion for Slack
 

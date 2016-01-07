@@ -32,7 +32,7 @@ function addTeamToPayload(payload) {
 }
 
 function teamNotFoundError(host) {
-  return "Time to Slack was not added to your team. Add it at https://" + host;
+  return "Channel Time was not added to your team. Add it at https://" + host;
 }
 
 module.exports = function (config) {

@@ -41,7 +41,7 @@ app.use(function(req, res, next) {
 
 app.use(function(err, req, res, next) {
   logger.error("Error: " + err + "\n" + err.stack);
-  res.status(err.status || 500).send("Time to Slack crashed :boom:");
+  res.status(err.status || 500).send("Channel Time crashed :boom:");
 });
 
 module.exports = app;
