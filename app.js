@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var slash = require('./routes/slash');
 var auth = require('./routes/auth');
 
+require('./adapters/_init');
 var SlackTime = require('./lib/slack_time');
 
 if (!process.env.SLACK_CLIENT_ID || !process.env.SLACK_CLIENT_SECRET || !process.env.SLACK_SLASH_TOKEN) {

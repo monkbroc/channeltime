@@ -1,11 +1,6 @@
 var mongoose = require('mongoose');
 var timestamps = require('mongoose-timestamp');
 
-mongoose.Promise = global.Promise;
-
-var url = process.env.MONGODB_URL || 'mongodb://localhost/slack_time';
-mongoose.connect(url);
-
 var AccountSchema = mongoose.Schema({
     teamId: String,
     createdBy: String,

@@ -1,5 +1,6 @@
 var express = require('express');
 var Account = require('../adapters/account');
+var Channel = require('../adapters/channel');
 var scmp = require('scmp');
 var logger = require('../lib/logger');
 
@@ -17,6 +18,19 @@ function mapSlackMessage(msg) {
     currentUserId: msg.user_id,
     channelId: msg.channel_id
   };
+}
+
+function addChannelHelpersToPayload(payload) {
+  payload.getChannelMembers = function (teamId, channelId) {
+    return Channel.find(teamId, channelId)
+    .then(function (channel) {
+      return channel.members;
+    });
+  };
+  payload.updateChannelMembers = function (teamId, channelId, members) {
+    return Channel.findOrCreate(teamId, channelId, { members: members });
+  };
+  return payload;
 }
 
 function addTeamToPayload(payload) {
@@ -48,6 +62,7 @@ module.exports = function (config) {
     }
 
     var payload = mapSlackMessage(req.body);
+    payload = addChannelHelpersToPayload(payload);
 
     addTeamToPayload(payload)
     .then(function (payload) {
