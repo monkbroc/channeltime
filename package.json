@@ -20,7 +20,7 @@
     "express": "~4.13.1",
     "got": "~5.2.1",
     "moment": "~2.10.6",
-    "mongoose": "~4.3.1",
+    "mongoose": "~5.7.7",
     "mongoose-timestamp": "~0.4.0",
     "morgan": "~1.6.1",
     "node-cache": "^3.2.0",
