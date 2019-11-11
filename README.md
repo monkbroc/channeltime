@@ -39,14 +39,15 @@ Start the process of adding a team by visiting https://77ab8d40.ngrok.com/slack/
 
 To run to production: Find a host, set your domain name, set the environment variables, deploy your code and run the app on boot.
 
-## TODO
+## Website
 
 The static HTML part of Channel Time is actually served statically by
-Nginx and generated through Middleman, a Ruby static site generator. It
-would be best to just bite the bullet, figure out how Gulp works and put
-everything in a single application.
+Nginx and generated through Middleman, a Ruby static site generator.
 
-Static portion of the site: https://github.com/monkbroc/channeltime-web
+To change the site:
+- `cd web`
+- `middleman build`
+- `git add . && git commit -m 'update website'`
 
 ## License
 
