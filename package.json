@@ -22,7 +22,7 @@
     "moment": "~2.10.6",
     "mongoose": "~4.3.1",
     "mongoose-timestamp": "~0.4.0",
-    "morgan": "~1.6.1",
+    "morgan": "~1.9.1",
     "node-cache": "^3.2.0",
     "scmp": "~1.0.0",
     "winston": "~2.1.1",
