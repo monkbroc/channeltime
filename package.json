@@ -19,7 +19,7 @@
     "dotenv": "~1.2.0",
     "express": "~4.13.1",
     "got": "~5.2.1",
-    "moment": "~2.10.6",
+    "moment": "~2.24.0",
     "mongoose": "~4.3.1",
     "mongoose-timestamp": "~0.4.0",
     "morgan": "~1.6.1",
