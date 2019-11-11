@@ -1,0 +1,245 @@
+@charset "utf-8";
+
+$mobile-width: 48em;
+$primary-color: #f3c859;
+$title-color: darken($primary-color, 15%);
+$title-link-color: darken($title-color, 20%);
+$body-text-color: #454545;
+$footer-color: #888;
+$heart-red: #eb4d5c;
+
+body {
+  background: #fff;
+  color: $body-text-color;
+  font-family: Lato, sans-serif;
+
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  > .main {
+    flex: 1;
+  }
+}
+
+.page-header {
+  background-color: $primary-color;
+  text-align: center;
+}
+
+.page-header.-small {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  > .title {
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    letter-spacing: -1px;
+    margin: 0;
+  }
+
+  > .tagline {
+    color: rgba(255, 255, 255, .7);
+    font-size: 20px;
+  }
+
+  .add-to-slack-button {
+    max-width: 16em;
+  }
+}
+
+.page-header.-jumbo {
+  padding-bottom: 30px;
+
+  > .logo {
+    margin: 80px 0 20px 0;
+  }
+
+  > .title {
+    color: white;
+    font-size: 64px;
+    font-weight: bold;
+    letter-spacing: -1px;
+    margin: 0;
+  }
+
+  > .tagline {
+    color: rgba(255, 255, 255, .7);
+    font-size: 24px;
+  }
+
+  .add-to-slack-button {
+    max-width: 16em;
+  }
+}
+
+.page-content {
+  margin: 0 auto;
+  max-width: 60em;
+  padding: 5em 2em;
+}
+
+.page-footer {
+  background-color: $footer-color;
+  padding: 3em;
+}
+
+.content-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  &.-reverse {
+    flex-direction: row-reverse;
+  }
+
+  &.-centered {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.-centeredvertical {
+    align-items: center;
+  }
+
+  + .content-row {
+    margin-top: 80px;
+  }
+
+  > .item {
+    flex-grow: 1;
+    flex-basis: 100%;
+    max-width: 100%;
+
+    @media only screen and (min-width: $mobile-width) {
+      flex-basis: 45%;
+      max-width: 45%;
+
+      &.-narrow {
+        flex-basis: 20%;
+        max-width: 20%;
+      }
+
+      &.-wide {
+        flex-basis: 70%;
+        max-width: 70%;
+      }
+    }
+  }
+}
+
+.image-responsive {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.description-paragraph {
+  > .title {
+    color: $title-color;
+  }
+
+  > .body {
+    font-size: 1.3em;
+  }
+}
+
+.link-undecorated {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.copyright-notice {
+  font-weight: bold;
+  text-align: center;
+  a {
+    @extend .link-undecorated;
+  }
+}
+
+.privacy-notice {
+  text-align: center;
+
+  a {
+    @extend .link-undecorated;
+  }
+}
+
+.affiliation-notice {
+  text-align: center;
+}
+
+
+.code-example-list {
+  font-family: monospace, serif;
+  font-size: 1.3em;
+  list-style: none;
+  padding: 0;
+
+  > li {
+    padding: 10px 0;
+  }
+}
+
+.privacy-policy {
+  max-width: 40em;
+  font-size: 18px;
+}
+
+.maker-signature {
+  color: $heart-red;
+  margin: 80px 0 40px;
+  text-align: center;
+}
+
+.support-line {
+  margin: 80px 0;
+  text-align: center;
+
+  &, a {
+    color: $title-color;
+  }
+}
+
+.secondary-button {
+  text-align: center;
+
+  .add-to-slack-button {
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    max-width: 230px;
+  }
+}
+
+.jotform-form {
+  .form-label-top {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 9px;
+    margin-top: 20px;
+  }
+
+  .form-textbox {
+    padding: 3px;
+    margin-left: 0;
+    font-size: 1em;
+    line-height: 1.3em;
+  }
+
+  .form-buttons-wrapper {
+    margin-top: 20px;
+  }
+
+  .form-submit-button {
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    color: #666;
+    cursor: pointer;
+    border-radius: 3px 3px;
+    background: #f5f5f5;
+  }
+}

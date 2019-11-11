@@ -1,0 +1,69 @@
+<section class="page-header -jumbo">
+  <%= image_tag "hourglass.png", class: "logo" %>
+  <h1 class="title"><%= data.project.name %></h1>
+  <p class="tagline">Automatic time zone conversions for your team</p>
+  <%= partial "add_to_slack" %>
+</section>
+
+<section class="page-content">
+  <div class="content-row -reverse">
+    <div class="item description-paragraph">
+      <h1 class="title">Use <code>/time</code> to convert times</h1>
+      <p class="body">
+        Don't ask if that the time is in your time zone or your
+        teammate's time zone.
+      </p>
+      <p class="body">
+        Start a message with <code>/time</code> and <%= data.project.name %> will
+        automatically parse your message to
+        convert the time for everybody in the room.
+      </p>
+    </div>
+
+    <div class="item">
+      <%= image_tag "screenshot.gif", class: "image-responsive" %>
+    </div>
+  </div>
+
+  <div class="content-row">
+    <div class="item description-paragraph">
+      <h1 class="title">Open source</h1>
+      <p class="body">
+        If you'd rather host this yourself or you just want to peek under the hook, go ahead and check out
+        <%= link_to "the source code for #{data.project.name}", data.project.github_url %>.
+      </p>
+    </div>
+
+    <div class="item">
+      <a href="<%= data.project.github_url %>">
+        <%= image_tag "github.jpg", class: "image-responsive" %>
+      </a>
+    </div>
+  </div>
+
+  <div class="content-row -reverse">
+    <div class="item description-paragraph">
+      <h1 class="title">Permissions</h1>
+      <p class="body">
+        Here are the permissions that <strong><%= data.project.name %></strong> needs and why:
+        <ul>
+          <li>Confirm your identity: get the Slack ID for the user adding this app</li>
+          <li>Add commands: to add the <code>/time</code> command</li>
+          <li>Access information about your public channels: to be able to match channel members with their time zone</li>
+          <li>Send messages as <%= data.project.name %>: to post the modified message with time zone information</li>
+          <li>Access your team's profile information: to find each team member's time zone</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="item">
+      <%= image_tag "permissions.png", class: "image-responsive" %>
+    </div>
+  </div>
+  <h2 class="support-line">
+    Questions? Concerns? Issues? Tweet to <a href="https://twitter.com/<%= data.project.twitter_handle %>">@<%= data.project.twitter_handle %></a> or <%= link_to "visit the support page", "support" %>
+  </h2>
+  <h2 class="maker-signature">
+    Made with ❤️ by <a href="http://www.julienvanier.com/" class="link-undecorated">Julien Vanier</a>, a slacker just like you.
+  </h2>
+</section>

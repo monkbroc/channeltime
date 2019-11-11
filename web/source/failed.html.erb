@@ -1,0 +1,24 @@
+---
+title: Failed to add to Slack
+---
+
+<section class="page-content">
+  <div class="content-row -reverse -centered">
+    <div class="item -wide">
+      <h1>Sadly <%= data.project.name %> was not be added to your team.</h1>
+    </div>
+
+    <div class="item -narrow">
+      <%= image_tag "unamused.png" %>
+    </div>
+  </div>
+</section>
+
+<section class="page-content">
+  <div class="content-row -centered">
+    <div class="item">
+      <h1>Want to try again?</h1>
+      <%= partial "add_to_slack" %>
+    </div>
+  </div>
+</section>
