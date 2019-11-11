@@ -1,7 +1,6 @@
 require('dotenv').load();
 
 var express = require('express');
-var favicon = require('serve-favicon');
 var morgan = require('morgan');
 var logger = require('./lib/logger');
 var bodyParser = require('body-parser');
@@ -32,6 +31,8 @@ app.use('/slack', auth({
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   scopes: SlackTime.requiredOAuthScopes
 }));
+
+app.use(express.static('web/build'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
