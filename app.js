@@ -23,9 +23,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/slack/receive', slash({
-  handler: SlackTime,
+  handler: SlackTime.getSlackMessageWithChannelTimezones,
   token: process.env.SLACK_SLASH_TOKEN
 }));
+
+app.use('/slack/receive_dt', slash({
+  handler: SlackTime.getSlackMessageWithLocalTime,
+  token: process.env.SLACK_SLASH_TOKEN
+}));
+
 app.use('/slack', auth({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
